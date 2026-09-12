@@ -1,6 +1,6 @@
 'use client';
 
-import { DemoScenario } from '@/lib/types';
+import { DemoScenario, AgentMode } from '@/lib/types';
 
 interface SidebarProps {
   isOpen: boolean;
@@ -8,9 +8,10 @@ interface SidebarProps {
   scenarios: DemoScenario[];
   selectedScenario: DemoScenario | null;
   onSelectScenario: (scenario: DemoScenario) => void;
-  agentMode: 'mock' | 'live';
-  onSetAgentMode: (mode: 'mock' | 'live') => void;
+  agentMode: AgentMode;
+  onSetAgentMode: (mode: AgentMode) => void;
   onReset: () => void;
+  groqConfigured?: boolean;
 }
 
 export default function Sidebar({
@@ -22,6 +23,7 @@ export default function Sidebar({
   agentMode,
   onSetAgentMode,
   onReset,
+  groqConfigured = false,
 }: SidebarProps) {
   return (
     <>
@@ -64,37 +66,50 @@ export default function Sidebar({
               <label className="text-[11px] font-bold text-[var(--muted)] uppercase tracking-wider">
                 Agent Execution Mode
               </label>
+              <span
+                className={`text-[9px] px-1.5 py-0.5 rounded font-mono font-semibold ${
+                  groqConfigured
+                    ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30'
+                    : 'bg-amber-500/15 text-amber-400 border border-amber-500/30'
+                }`}
+              >
+                {groqConfigured ? 'Groq Key Active' : 'No Groq Key'}
+              </span>
             </div>
+
             <div className="grid grid-cols-2 gap-2">
               <button
+                onClick={() => onSetAgentMode('groq')}
+                className={`px-3 py-2 rounded-lg text-xs font-semibold transition-all border flex flex-col items-center gap-0.5 ${
+                  agentMode === 'groq'
+                    ? 'bg-emerald-500/15 border-emerald-500/50 text-emerald-300 shadow-sm'
+                    : 'bg-[var(--card)] border-[var(--border)] text-[var(--muted)] hover:text-white'
+                }`}
+              >
+                <span>⚡ Groq AI</span>
+                <span className="text-[9px] opacity-80 font-normal">Llama 3.3 70B</span>
+              </button>
+              <button
                 onClick={() => onSetAgentMode('mock')}
-                className={`px-3 py-2 rounded-lg text-xs font-semibold transition-all border ${
+                className={`px-3 py-2 rounded-lg text-xs font-semibold transition-all border flex flex-col items-center gap-0.5 ${
                   agentMode === 'mock'
                     ? 'bg-amber-500/15 border-amber-500/50 text-amber-300 shadow-sm'
                     : 'bg-[var(--card)] border-[var(--border)] text-[var(--muted)] hover:text-white'
                 }`}
               >
-                🧪 Mock Simulation
-              </button>
-              <button
-                onClick={() => onSetAgentMode('live')}
-                className={`px-3 py-2 rounded-lg text-xs font-semibold transition-all border ${
-                  agentMode === 'live'
-                    ? 'bg-emerald-500/15 border-emerald-500/50 text-emerald-300 shadow-sm'
-                    : 'bg-[var(--card)] border-[var(--border)] text-[var(--muted)] hover:text-white'
-                }`}
-              >
-                ⚡ Live Teammate
+                <span>🧪 Mock Mode</span>
+                <span className="text-[9px] opacity-80 font-normal">Offline Fallback</span>
               </button>
             </div>
+
             <div className="mt-2 p-2 rounded-md bg-[var(--card)] border border-[var(--border)] text-[11px] text-[var(--muted)] leading-relaxed">
-              {agentMode === 'mock' ? (
+              {agentMode === 'groq' ? (
                 <>
-                  <strong className="text-amber-400">Mock Mode Active:</strong> Uses local deterministic test stub that executes actual backend tools. No external LLM required.
+                  <strong className="text-emerald-400">⚡ Groq AI Active:</strong> Uses live Llama 3.3 model via Groq API. Reads <code className="text-[10px] text-emerald-300">GROQ_API_KEY</code> on server and executes real backend tools.
                 </>
               ) : (
                 <>
-                  <strong className="text-emerald-400">Live Mode Active:</strong> Proxies requests to external agent orchestration service via <code className="text-[10px] text-emerald-300">NEXT_PUBLIC_AGENT_API_URL</code>.
+                  <strong className="text-amber-400">🧪 Mock Fallback Active:</strong> Deterministic simulation stub calling backend tools without calling Groq. Useful for offline or test runs.
                 </>
               )}
             </div>

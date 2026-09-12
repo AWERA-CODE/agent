@@ -186,3 +186,9 @@ export interface ApiResponse<T = unknown> {
   error?: string;
   timestamp: string;
 }
+
+// ---- Agent Execution Modes ----
+
+export type AgentMode = 'groq' | 'mock' | 'live';
+
+

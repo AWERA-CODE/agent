@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { ChatMessage, DemoScenario } from '@/lib/types';
+import { ChatMessage, DemoScenario, AgentMode } from '@/lib/types';
 
 interface ChatPanelProps {
   messages: ChatMessage[];
@@ -9,7 +9,8 @@ interface ChatPanelProps {
   isProcessing: boolean;
   selectedScenario: DemoScenario | null;
   onToggleSidebar: () => void;
-  agentMode?: 'mock' | 'live';
+  agentMode?: AgentMode;
+  onFallbackToMock?: () => void;
 }
 
 export default function ChatPanel({
@@ -18,7 +19,8 @@ export default function ChatPanel({
   isProcessing,
   selectedScenario,
   onToggleSidebar,
-  agentMode = 'mock',
+  agentMode = 'groq',
+  onFallbackToMock,
 }: ChatPanelProps) {
   const [input, setInput] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -64,12 +66,18 @@ export default function ChatPanel({
               <h2 className="text-sm font-semibold text-white">Customer Support Chat</h2>
               <span
                 className={`text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full border ${
-                  agentMode === 'mock'
+                  agentMode === 'groq'
+                    ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'
+                    : agentMode === 'mock'
                     ? 'bg-amber-500/10 text-amber-400 border-amber-500/30'
-                    : 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'
+                    : 'bg-blue-500/10 text-blue-400 border-blue-500/30'
                 }`}
               >
-                {agentMode === 'mock' ? 'Mock Mode' : 'Live Agent'}
+                {agentMode === 'groq'
+                  ? '⚡ Groq AI (Live)'
+                  : agentMode === 'mock'
+                  ? '🧪 Mock Fallback'
+                  : '⚡ Live Agent'}
               </span>
             </div>
             <p className="text-xs text-[var(--muted)] truncate max-w-md">
@@ -81,7 +89,7 @@ export default function ChatPanel({
         {isProcessing && (
           <div className="flex items-center gap-2 text-xs font-medium text-[var(--primary)] animate-pulse">
             <div className="w-2 h-2 bg-[var(--primary)] rounded-full" />
-            Agent reasoning...
+            {agentMode === 'groq' ? 'Groq AI reasoning & tool calling...' : 'Agent processing...'}
           </div>
         )}
       </div>
@@ -92,9 +100,13 @@ export default function ChatPanel({
           <div className="flex items-center justify-center h-full">
             <div className="text-center max-w-md p-6 bg-[var(--card)] rounded-2xl border border-[var(--border)]">
               <div className="text-5xl mb-4">🤖</div>
-              <h3 className="text-base font-semibold text-white mb-2">Autonomous Support Agent</h3>
+              <h3 className="text-base font-semibold text-white mb-2">
+                {agentMode === 'groq' ? 'Groq AI Autonomous Agent' : 'Support Resolution Agent'}
+              </h3>
               <p className="text-xs text-[var(--muted)] mb-4 leading-relaxed">
-                Test automated resolutions, policy constraints, and the mandatory out-of-stock replanning scenario using actual simulated backend enterprise tools.
+                {agentMode === 'groq'
+                  ? 'Powered by Llama 3.3 on Groq with native tool calling against real enterprise tools (inventory, policies, refunds, state audit).'
+                  : 'Running in offline Mock Fallback mode with simulated developer traces calling backend tools.'}
               </p>
               {selectedScenario && (
                 <button
@@ -126,8 +138,18 @@ export default function ChatPanel({
             >
               {msg.role === 'agent' && (
                 <div className="flex items-center gap-2 mb-1.5 pb-1 border-b border-[var(--border)]/50">
-                  <span className="text-xs font-bold text-[var(--primary)]">
-                    {agentMode === 'mock' ? '🤖 Mock Agent (Simulation Stub)' : '🤖 AI Agent (Live Service)'}
+                  <span className="text-xs font-bold text-[var(--primary)] flex items-center gap-1">
+                    {agentMode === 'groq' ? (
+                      <>
+                        <span>⚡</span>
+                        <span>Groq AI Agent (Llama 3.3)</span>
+                      </>
+                    ) : (
+                      <>
+                        <span>🤖</span>
+                        <span>Mock Agent (Simulation Stub)</span>
+                      </>
+                    )}
                   </span>
                 </div>
               )}
@@ -148,7 +170,7 @@ export default function ChatPanel({
           <div className="flex justify-start animate-fade-in">
             <div className="bg-[var(--card)] border border-[var(--border)] px-4 py-3 rounded-2xl rounded-bl-sm">
               <div className="text-xs text-[var(--primary)] font-semibold mb-1">
-                {agentMode === 'mock' ? '🤖 Mock Agent' : '🤖 AI Agent'}
+                {agentMode === 'groq' ? '⚡ Groq AI Agent' : '🤖 Mock Agent'}
               </div>
               <div className="loading-dots flex gap-1.5 py-1">
                 <span className="w-2 h-2 bg-[var(--primary)] rounded-full inline-block animate-bounce" style={{ animationDelay: '0ms' }}></span>
@@ -164,10 +186,10 @@ export default function ChatPanel({
 
       {/* Quick Run / Retry Bar */}
       {selectedScenario && messages.length > 0 && !isProcessing && (
-        <div className="px-4 pb-2 flex gap-2">
+        <div className="px-4 pb-2 flex gap-2 flex-wrap">
           <button
             onClick={handleQuickSend}
-            className="flex-1 px-3 py-2 bg-[var(--card)] border border-[var(--border)] rounded-lg text-xs text-[var(--muted)] hover:text-white hover:border-[var(--primary)] transition-colors text-left flex items-center justify-between"
+            className="flex-1 min-w-[200px] px-3 py-2 bg-[var(--card)] border border-[var(--border)] rounded-lg text-xs text-[var(--muted)] hover:text-white hover:border-[var(--primary)] transition-colors text-left flex items-center justify-between"
           >
             <span className="truncate">▶ Re-run: &quot;{selectedScenario.message}&quot;</span>
             <span className="text-[10px] text-[var(--primary)] font-semibold ml-2 shrink-0">Click to run</span>
@@ -178,6 +200,16 @@ export default function ChatPanel({
               className="px-3 py-2 bg-red-900/30 text-red-200 border border-red-500/40 rounded-lg text-xs font-semibold hover:bg-red-900/50 transition-colors"
             >
               🔄 Retry
+            </button>
+          )}
+          {hasError && agentMode === 'groq' && onFallbackToMock && (
+            <button
+              type="button"
+              onClick={onFallbackToMock}
+              className="px-3 py-2 bg-amber-950/40 text-amber-300 border border-amber-500/50 rounded-lg text-xs font-semibold hover:bg-amber-900/50 transition-colors flex items-center gap-1.5"
+            >
+              <span>🧪</span>
+              <span>Use Mock Mode Fallback</span>
             </button>
           )}
         </div>

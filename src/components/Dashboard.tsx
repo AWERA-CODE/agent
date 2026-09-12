@@ -1,11 +1,20 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import Sidebar from './Sidebar';
 import ChatPanel from './ChatPanel';
 import TracePanel from './TracePanel';
 import StatePanel from './StatePanel';
-import { ChatMessage, TraceEvent, Case, Customer, Order, InventoryItem, DemoScenario } from '@/lib/types';
+import {
+  ChatMessage,
+  TraceEvent,
+  Case,
+  Customer,
+  Order,
+  InventoryItem,
+  DemoScenario,
+  AgentMode,
+} from '@/lib/types';
 import { callAgentService } from '@/lib/agentAdapter';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -57,8 +66,39 @@ export default function Dashboard() {
   const [inventoryItems, setInventoryItems] = useState<InventoryItem[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
   const [selectedScenario, setSelectedScenario] = useState<DemoScenario | null>(DEMO_SCENARIOS[2]); // Default to mandatory OOS
-  const [agentMode, setAgentMode] = useState<'mock' | 'live'>('mock');
+  const [agentMode, setAgentMode] = useState<AgentMode>('groq');
+  const [groqConfigured, setGroqConfigured] = useState<boolean>(false);
   const [sidebarOpen, setSidebarOpen] = useState(true);
+
+  // Check server configuration for Groq API key on mount
+  useEffect(() => {
+    async function checkStatus() {
+      try {
+        const res = await fetch('/api/agent/status');
+        const data = await res.json();
+        if (data.success) {
+          setGroqConfigured(Boolean(data.groq_configured));
+          if (data.groq_configured) {
+            setAgentMode('groq');
+          } else {
+            setAgentMode('mock');
+            setMessages([
+              {
+                id: uuidv4(),
+                role: 'system',
+                content:
+                  'ℹ️ Note: GROQ_API_KEY is not set in .env.local on the server.\n\nThe application is running in Mock Mode (offline fallback). To enable live Groq AI reasoning, add GROQ_API_KEY to your .env.local file.',
+                timestamp: new Date().toISOString(),
+              },
+            ]);
+          }
+        }
+      } catch {
+        setAgentMode('mock');
+      }
+    }
+    checkStatus();
+  }, []);
 
   const resetState = useCallback(async () => {
     setMessages([]);
@@ -143,7 +183,7 @@ export default function Dashboard() {
           setCurrentCase(caseData.data);
         }
 
-        // 2. Call agent service via decoupled adapter (Mock or Live)
+        // 2. Call agent service via decoupled adapter (Groq AI or Mock Fallback)
         const agentResult = await callAgentService(
           {
             scenario_id: scenario.id,
@@ -162,7 +202,13 @@ export default function Dashboard() {
           }
           addMessage('agent', agentResult.response);
         } else {
-          addMessage('system', `Agent Processing Failure: ${agentResult.error || 'Unknown error'}`);
+          // Explicitly show error without hiding it behind fake successes
+          addMessage(
+            'system',
+            `⚠️ Agent Error (${agentMode.toUpperCase()} mode):\n${
+              agentResult.error || 'Request could not be completed.'
+            }\n\n👉 You can switch to Mock Mode using the button below or in the sidebar.`
+          );
           if (agentResult.trace && agentResult.trace.length > 0) {
             setTraceEvents(agentResult.trace);
           }
@@ -171,7 +217,10 @@ export default function Dashboard() {
         // 3. Re-fetch confirmed live backend state
         await fetchState(customerId, orderId);
       } catch (err) {
-        addMessage('system', `Error executing agent pipeline: ${err instanceof Error ? err.message : 'Unknown error'}`);
+        addMessage(
+          'system',
+          `Error executing agent pipeline: ${err instanceof Error ? err.message : 'Unknown error'}`
+        );
       } finally {
         setIsProcessing(false);
       }
@@ -193,25 +242,50 @@ export default function Dashboard() {
     [resetState, addMessage, fetchState]
   );
 
+  const handleFallbackToMock = useCallback(() => {
+    setAgentMode('mock');
+    addMessage('system', 'Switched to Mock Fallback Mode. You can re-run scenarios offline.');
+  }, [addMessage]);
+
   return (
     <div className="flex flex-col h-screen overflow-hidden bg-[var(--background)]">
-      {/* Top Demo Environment Notice Banner */}
-      <div className="bg-amber-950/40 border-b border-amber-500/30 px-4 py-1.5 flex items-center justify-between text-[11px] text-amber-200 z-50">
+      {/* Top Demo Environment & Mode Notice Banner */}
+      <div
+        className={`px-4 py-1.5 flex items-center justify-between text-[11px] z-50 border-b ${
+          agentMode === 'groq'
+            ? 'bg-emerald-950/40 border-emerald-500/30 text-emerald-200'
+            : 'bg-amber-950/40 border-amber-500/30 text-amber-200'
+        }`}
+      >
         <div className="flex items-center gap-2 truncate">
-          <span className="font-bold uppercase tracking-wider text-amber-400">Demo Environment:</span>
+          <span
+            className={`font-bold uppercase tracking-wider ${
+              agentMode === 'groq' ? 'text-emerald-400' : 'text-amber-400'
+            }`}
+          >
+            {agentMode === 'groq' ? '⚡ Groq AI Active:' : '🧪 Mock Mode:'}
+          </span>
           <span className="truncate">
-            State is maintained in-memory for deterministic replay. Failed actions fail honestly without fake successes.
+            {agentMode === 'groq'
+              ? 'Llama 3.3 model reasoning with native tool calling against real backend tools. Verified state updates.'
+              : 'Deterministic test stub running with in-memory state. No external API key required.'}
           </span>
         </div>
         <div className="flex items-center gap-3 shrink-0">
-          <span className="text-[10px] text-amber-300 font-mono">
-            Active Mode: <strong className="uppercase">{agentMode}</strong>
+          <span
+            className={`text-[10px] font-mono px-1.5 py-0.5 rounded border ${
+              groqConfigured
+                ? 'bg-emerald-500/10 text-emerald-300 border-emerald-500/30'
+                : 'bg-amber-500/10 text-amber-300 border-amber-500/30'
+            }`}
+          >
+            {groqConfigured ? 'Groq Key: Detected' : 'Groq Key: Missing'}
           </span>
           <a
             href="/api/health"
             target="_blank"
             rel="noreferrer"
-            className="text-[10px] underline text-amber-400 hover:text-amber-200"
+            className="text-[10px] underline hover:opacity-80"
           >
             Health Check
           </a>
@@ -230,6 +304,7 @@ export default function Dashboard() {
           agentMode={agentMode}
           onSetAgentMode={setAgentMode}
           onReset={resetState}
+          groqConfigured={groqConfigured}
         />
 
         {/* Content Area */}
@@ -243,6 +318,7 @@ export default function Dashboard() {
               selectedScenario={selectedScenario}
               onToggleSidebar={() => setSidebarOpen(!sidebarOpen)}
               agentMode={agentMode}
+              onFallbackToMock={handleFallbackToMock}
             />
           </div>
 

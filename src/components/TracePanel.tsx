@@ -1,10 +1,10 @@
 'use client';
 
-import { TraceEvent } from '@/lib/types';
+import { TraceEvent, AgentMode } from '@/lib/types';
 
 interface TracePanelProps {
   events: TraceEvent[];
-  mode?: 'mock' | 'live';
+  mode?: AgentMode;
 }
 
 const TYPE_CONFIG: Record<string, { icon: string; color: string; label: string }> = {
@@ -27,7 +27,7 @@ const STATUS_BADGE: Record<string, { bg: string; text: string; label?: string }>
   pending: { bg: 'rgba(107,114,128,0.15)', text: 'var(--muted)', label: 'PENDING' },
 };
 
-export default function TracePanel({ events, mode = 'mock' }: TracePanelProps) {
+export default function TracePanel({ events, mode = 'groq' }: TracePanelProps) {
   return (
     <div className="flex flex-col h-full">
       {/* Header */}
@@ -37,12 +37,18 @@ export default function TracePanel({ events, mode = 'mock' }: TracePanelProps) {
             <h3 className="text-sm font-semibold text-white">🔍 Agent Execution Trace</h3>
             <span
               className={`text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full border ${
-                mode === 'mock'
+                mode === 'groq'
+                  ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'
+                  : mode === 'mock'
                   ? 'bg-amber-500/10 text-amber-400 border-amber-500/30'
-                  : 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'
+                  : 'bg-blue-500/10 text-blue-400 border-blue-500/30'
               }`}
             >
-              {mode === 'mock' ? '🧪 Mock Simulation Mode' : '⚡ Live Agent'}
+              {mode === 'groq'
+                ? '⚡ Groq AI (Live)'
+                : mode === 'mock'
+                ? '🧪 Mock Simulation'
+                : '⚡ Live Agent'}
             </span>
           </div>
           {events.length > 0 && (
@@ -52,8 +58,10 @@ export default function TracePanel({ events, mode = 'mock' }: TracePanelProps) {
           )}
         </div>
         <p className="text-xs text-[var(--muted)] mt-1">
-          {mode === 'mock'
-            ? 'Chronological event trace produced by developer test stub calling actual backend tools.'
+          {mode === 'groq'
+            ? 'Real-time decision and tool-calling events streamed from Groq AI executing backend enterprise tools.'
+            : mode === 'mock'
+            ? 'Chronological event trace produced by local deterministic test stub calling actual backend tools.'
             : 'Live stream of decision events delivered from external AI Agent service.'}
         </p>
       </div>
