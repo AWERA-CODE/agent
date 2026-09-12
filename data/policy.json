@@ -1,0 +1,41 @@
+{
+  "return_policy": {
+    "return_window_days": 30,
+    "description": "Products can be returned or replaced within 30 days of delivery date.",
+    "conditions": [
+      "Item must be in original condition or reported defective/damaged upon receipt",
+      "Refunds are processed back to the original payment method",
+      "Replacements require available inventory stock"
+    ]
+  },
+  "cancellation_policy": {
+    "allowed_statuses": [
+      "PENDING",
+      "PROCESSING"
+    ],
+    "disallowed_statuses": [
+      "SHIPPED",
+      "DELIVERED",
+      "CANCELLED",
+      "REFUNDED",
+      "REPLACED"
+    ],
+    "description": "Orders can only be cancelled before they enter the SHIPPED or DELIVERED status."
+  },
+  "refund_policy": {
+    "max_auto_refund_amount": 500.0,
+    "requires_return": true,
+    "damaged_defective_override": true,
+    "allowed_statuses": [
+      "DELIVERED",
+      "SHIPPED",
+      "PENDING",
+      "PROCESSING"
+    ]
+  },
+  "replacement_policy": {
+    "requires_inventory_stock": true,
+    "allowed_within_window": true,
+    "allow_cross_sku_replacement": false
+  }
+}

@@ -1,0 +1,152 @@
+[
+  {
+    "order_id": "ORD-5001",
+    "customer_id": "CUST-1001",
+    "order_date": "2026-09-02T10:00:00Z",
+    "delivery_date": "2026-09-05T14:30:00Z",
+    "status": "DELIVERED",
+    "resolution_state": "NONE",
+    "items": [
+      {
+        "sku": "SKU-WIRELESS-EARBUDS-BLK",
+        "item_name": "Wireless Noise-Canceling Earbuds (Black)",
+        "quantity": 1,
+        "unit_price": 89.99
+      }
+    ],
+    "total_amount": 89.99,
+    "payment_method": "Credit Card ending in 4242",
+    "shipping_address": "123 Main St, Tech City, CA 94016",
+    "history": [
+      {
+        "timestamp": "2026-09-02T10:00:00Z",
+        "action": "ORDER_PLACED",
+        "details": "Order placed by customer"
+      },
+      {
+        "timestamp": "2026-09-05T14:30:00Z",
+        "action": "ORDER_DELIVERED",
+        "details": "Delivered by carrier"
+      }
+    ]
+  },
+  {
+    "order_id": "ORD-5002",
+    "customer_id": "CUST-1002",
+    "order_date": "2026-07-01T09:15:00Z",
+    "delivery_date": "2026-07-05T11:00:00Z",
+    "status": "DELIVERED",
+    "resolution_state": "NONE",
+    "items": [
+      {
+        "sku": "SKU-USB-C-CABLE-6FT",
+        "item_name": "Ultra-Fast USB-C Cable (6ft)",
+        "quantity": 1,
+        "unit_price": 19.99
+      }
+    ],
+    "total_amount": 19.99,
+    "payment_method": "PayPal (bob.jones@example.com)",
+    "shipping_address": "456 Oak Ave, Springfield, IL 62701",
+    "history": [
+      {
+        "timestamp": "2026-07-01T09:15:00Z",
+        "action": "ORDER_PLACED",
+        "details": "Order placed by customer"
+      },
+      {
+        "timestamp": "2026-07-05T11:00:00Z",
+        "action": "ORDER_DELIVERED",
+        "details": "Delivered by carrier"
+      }
+    ]
+  },
+  {
+    "order_id": "ORD-5003",
+    "customer_id": "CUST-1003",
+    "order_date": "2026-09-11T16:00:00Z",
+    "delivery_date": null,
+    "status": "PENDING",
+    "resolution_state": "NONE",
+    "items": [
+      {
+        "sku": "SKU-MECHANICAL-KEYBOARD-RGB",
+        "item_name": "RGB Mechanical Gaming Keyboard",
+        "quantity": 1,
+        "unit_price": 129.99
+      }
+    ],
+    "total_amount": 129.99,
+    "payment_method": "Credit Card ending in 1099",
+    "shipping_address": "789 Pine Rd, Austin, TX 78701",
+    "history": [
+      {
+        "timestamp": "2026-09-11T16:00:00Z",
+        "action": "ORDER_PLACED",
+        "details": "Order pending fulfillment"
+      }
+    ]
+  },
+  {
+    "order_id": "ORD-5004",
+    "customer_id": "CUST-1001",
+    "order_date": "2026-09-04T12:00:00Z",
+    "delivery_date": "2026-09-08T15:45:00Z",
+    "status": "DELIVERED",
+    "resolution_state": "NONE",
+    "items": [
+      {
+        "sku": "SKU-SMARTWATCH-PRO-SLV",
+        "item_name": "SmartWatch Pro (Silver)",
+        "quantity": 1,
+        "unit_price": 249.99
+      }
+    ],
+    "total_amount": 249.99,
+    "payment_method": "Credit Card ending in 4242",
+    "shipping_address": "123 Main St, Tech City, CA 94016",
+    "history": [
+      {
+        "timestamp": "2026-09-04T12:00:00Z",
+        "action": "ORDER_PLACED",
+        "details": "Order placed by customer"
+      },
+      {
+        "timestamp": "2026-09-08T15:45:00Z",
+        "action": "ORDER_DELIVERED",
+        "details": "Delivered by carrier - reported screen issue"
+      }
+    ]
+  },
+  {
+    "order_id": "ORD-5005",
+    "customer_id": "CUST-1004",
+    "order_date": "2026-09-10T08:00:00Z",
+    "delivery_date": null,
+    "status": "SHIPPED",
+    "resolution_state": "NONE",
+    "items": [
+      {
+        "sku": "SKU-WIRELESS-EARBUDS-WHT",
+        "item_name": "Wireless Noise-Canceling Earbuds (White)",
+        "quantity": 1,
+        "unit_price": 89.99
+      }
+    ],
+    "total_amount": 89.99,
+    "payment_method": "Apple Pay",
+    "shipping_address": "321 Hero Way, Metropolis, NY 10001",
+    "history": [
+      {
+        "timestamp": "2026-09-10T08:00:00Z",
+        "action": "ORDER_PLACED",
+        "details": "Order placed by customer"
+      },
+      {
+        "timestamp": "2026-09-11T10:00:00Z",
+        "action": "ORDER_SHIPPED",
+        "details": "In transit"
+      }
+    ]
+  }
+]

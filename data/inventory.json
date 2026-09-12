@@ -1,0 +1,42 @@
+[
+  {
+    "sku": "SKU-WIRELESS-EARBUDS-BLK",
+    "item_name": "Wireless Noise-Canceling Earbuds (Black)",
+    "category": "Electronics",
+    "unit_price": 89.99,
+    "quantity_in_stock": 45,
+    "restock_date": null
+  },
+  {
+    "sku": "SKU-WIRELESS-EARBUDS-WHT",
+    "item_name": "Wireless Noise-Canceling Earbuds (White)",
+    "category": "Electronics",
+    "unit_price": 89.99,
+    "quantity_in_stock": 12,
+    "restock_date": null
+  },
+  {
+    "sku": "SKU-SMARTWATCH-PRO-SLV",
+    "item_name": "SmartWatch Pro (Silver)",
+    "category": "Electronics",
+    "unit_price": 249.99,
+    "quantity_in_stock": 0,
+    "restock_date": "2026-10-15T00:00:00Z"
+  },
+  {
+    "sku": "SKU-USB-C-CABLE-6FT",
+    "item_name": "Ultra-Fast USB-C Cable (6ft)",
+    "category": "Accessories",
+    "unit_price": 19.99,
+    "quantity_in_stock": 150,
+    "restock_date": null
+  },
+  {
+    "sku": "SKU-MECHANICAL-KEYBOARD-RGB",
+    "item_name": "RGB Mechanical Gaming Keyboard",
+    "category": "Electronics",
+    "unit_price": 129.99,
+    "quantity_in_stock": 8,
+    "restock_date": null
+  }
+]
