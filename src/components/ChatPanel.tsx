@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { ChatMessage, DemoScenario, AgentMode } from '@/lib/types';
+import MarkdownRenderer from './MarkdownRenderer';
 
 interface ChatPanelProps {
   messages: ChatMessage[];
@@ -128,12 +129,12 @@ export default function ChatPanel({
             }`}
           >
             <div
-              className={`max-w-[85%] px-4 py-3 rounded-2xl text-sm whitespace-pre-wrap leading-relaxed ${
+              className={`max-w-[85%] px-4 py-3 rounded-2xl text-sm leading-relaxed ${
                 msg.role === 'user'
-                  ? 'bg-[var(--primary)] text-white rounded-br-sm'
+                  ? 'bg-[var(--primary)] text-white rounded-br-sm whitespace-pre-wrap'
                   : msg.role === 'agent'
                   ? 'bg-[var(--card)] border border-[var(--border)] text-[var(--foreground)] rounded-bl-sm shadow-sm'
-                  : 'bg-red-950/20 text-red-300 rounded-bl-sm border border-red-500/30'
+                  : 'bg-red-950/20 text-red-300 rounded-bl-sm border border-red-500/30 whitespace-pre-wrap'
               }`}
             >
               {msg.role === 'agent' && (
@@ -158,7 +159,11 @@ export default function ChatPanel({
                   <span>⚙️ System Notification</span>
                 </div>
               )}
-              {msg.content}
+              {msg.role === 'agent' ? (
+                <MarkdownRenderer content={msg.content} />
+              ) : (
+                msg.content
+              )}
               <div className="text-[10px] text-[var(--muted)] mt-2 text-right opacity-60">
                 {new Date(msg.timestamp).toLocaleTimeString()}
               </div>
