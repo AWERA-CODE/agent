@@ -1,0 +1,43 @@
+// Simulated customer profiles & tier metadata
+// Ported faithfully from AWERA-CODE/Agentic-Ai reference repository
+
+import { Customer } from '@/lib/types';
+
+export const customersData: Customer[] = [
+  {
+    customer_id: 'CUST-1001',
+    name: 'Alice Smith',
+    email: 'alice.smith@example.com',
+    phone: '+1-555-0192',
+    tier: 'VIP',
+    created_at: '2024-01-15T08:30:00Z',
+    orders: ['ORD-5001', 'ORD-5004'],
+  },
+  {
+    customer_id: 'CUST-1002',
+    name: 'Bob Jones',
+    email: 'bob.jones@example.com',
+    phone: '+1-555-0143',
+    tier: 'Standard',
+    created_at: '2024-03-22T10:15:00Z',
+    orders: ['ORD-5002'],
+  },
+  {
+    customer_id: 'CUST-1003',
+    name: 'Charlie Brown',
+    email: 'charlie.brown@example.com',
+    phone: '+1-555-0188',
+    tier: 'Standard',
+    created_at: '2024-06-10T14:20:00Z',
+    orders: ['ORD-5003'],
+  },
+  {
+    customer_id: 'CUST-1004',
+    name: 'Diana Prince',
+    email: 'diana.prince@example.com',
+    phone: '+1-555-0177',
+    tier: 'VIP',
+    created_at: '2024-08-01T11:00:00Z',
+    orders: ['ORD-5005'],
+  },
+];
