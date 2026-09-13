@@ -46,3 +46,42 @@ describe('Groq Agent Tool Definitions', () => {
     process.env.GROQ_API_KEY = originalKey;
   });
 });
+
+describe('Groq Agent System Prompt Optimization', () => {
+  it('should include all required prompt sections: Role, Reply Structure, Situations, Constraints, Few-Shot Examples, Self-Check', async () => {
+    const fs = await import('fs');
+    const path = await import('path');
+    const fileContent = fs.readFileSync(
+      path.join(process.cwd(), 'src/lib/groqAgent.ts'),
+      'utf-8'
+    );
+
+    expect(fileContent).toContain('ROLE & TONE DEFINITION');
+    expect(fileContent).toContain('MANDATORY REPLY STRUCTURE TEMPLATE');
+    expect(fileContent).toContain('ACKNOWLEDGMENT');
+    expect(fileContent).toContain('INVESTIGATION & ACTIONS TAKEN');
+    expect(fileContent).toContain('RESOLUTION & NEXT STEPS');
+    expect(fileContent).toContain('PROFESSIONAL CLOSING');
+    expect(fileContent).toContain('SITUATION-SPECIFIC HANDLING RULES');
+    expect(fileContent).toContain('HARD CONSTRAINTS');
+    expect(fileContent).toContain('FEW-SHOT ANCHORING EXAMPLES');
+    expect(fileContent).toContain('MANDATORY INTERNAL SELF-CHECK');
+  });
+
+  it('should include at least 6 few-shot anchoring examples covering key customer scenarios', async () => {
+    const fs = await import('fs');
+    const path = await import('path');
+    const fileContent = fs.readFileSync(
+      path.join(process.cwd(), 'src/lib/groqAgent.ts'),
+      'utf-8'
+    );
+
+    expect(fileContent).toContain('--- EXAMPLE 1: Straightforward Refund');
+    expect(fileContent).toContain('--- EXAMPLE 2: Replanning on Out-of-Stock Replacement');
+    expect(fileContent).toContain('--- EXAMPLE 3: Policy Refusal & Escalation');
+    expect(fileContent).toContain('--- EXAMPLE 4: Frustrated Customer De-escalation');
+    expect(fileContent).toContain('--- EXAMPLE 5: Ambiguous / Incomplete Request');
+    expect(fileContent).toContain('--- EXAMPLE 6: Repeat Contact / Follow-up');
+  });
+});
+
